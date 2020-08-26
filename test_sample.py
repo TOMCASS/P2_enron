@@ -23,7 +23,7 @@ header = False
 with open("sample_dataset.csv", "w") as file_out:
     for file in get_sample_mails():
         with open(file, "r", encoding="utf-8") as file_in:
-            m = mail(file_in.read())
+            m = mail(os.path.basename(file), file_in.read())
             if not header:
                 file_out.write(m.to_csv_header() + '\n')
                 header = True

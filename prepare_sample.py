@@ -1,6 +1,7 @@
 import os
 import random
 import shutil
+import uuid 
 
 MAILDIR_PATH = os.path.join(os.getcwd() , "maildir")
 SAMPLE_DATA_PATH = os.path.join(os.getcwd() , "sample")
@@ -36,6 +37,7 @@ def create_mails_sample_dataset (sample_data_percent) :
     i=1
     for mail in sample_dataset:
         print("(%s) %s" % (i, mail))
-        shutil.copy(mail, SAMPLE_DATA_PATH)
+        shutil.copy(mail,  os.path.join(SAMPLE_DATA_PATH, str(uuid.uuid1())))
+        #os.rename( os.path.join(SAMPLE_DATA_PATH,mail), os.path.join(SAMPLE_DATA_PATH, str(uuid.uuid1())) )#rename
         i = i+1
 
