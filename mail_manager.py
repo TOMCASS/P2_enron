@@ -10,10 +10,15 @@ from nltk.corpus import wordnet as wn
 from nltk.stem.wordnet import WordNetLemmatizer
 from nltk.stem import wordnet
 from nltk import pos_tag
+import csv
 
 import string
 
 class mail():
+    def is_not_enron_domain(self, email):
+        domain = re.findall('(?<=@)([\w.-]+)',email)
+        return False if len(domain) == 0 else not 'enron' in str(domain[0]) 
+
     def get_wordnet_pos(self, tagged_word):
         """
         Categorizing and tagging words
@@ -61,20 +66,26 @@ class mail():
         self.headers.append('id')
         self.attributes.append(name)
 
+        #set from sender in dataset
         self.headers.append('from')
         self.attributes.append(str(text['from']))
+
+        #set to senders in dataset
         self.headers.append('to')        
         self.attributes.append(str(text['to']).replace('\n', '').replace('\t', ''))
 
-
-        self.headers.append('X-Folder')        
+        #set mail location in dataset
+        self.headers.append('mail_folder')        
         try:
-            self.attributes.append(str(text['X-Folder']).split('\\')[3])
+            self.mail_folder = str(text['X-Folder']).split('\\')[3]
         except:
-            self.attributes.append(str(None))
+            self.mail_folder = str(None)
+        self.attributes.append(self.mail_folder)
         
+        #clean up text (punctuation, stopwords, lemmatization)
         self.text = self.standardize_text(text._payload)
         
+        #set true/false if incriminating words exists in the body of the email in the dataset
         with open("incriminating_words.csv", "r", encoding="utf-8") as incriminating_word:
             for word in incriminating_word:
                 exists = False
@@ -87,6 +98,22 @@ class mail():
         self.headers.append('cleanedtext')
         self.attributes.append(self.text)
 
+        #set true/false if the mail concerns external consultant
+        self.headers.append('is_extern')
+        is_extern = False
+        is_extern |= self.is_not_enron_domain(str(text['from']))
+
+        for mail in str(text['to']).split(','):
+            is_extern |= self.is_not_enron_domain(mail)
+
+        self.attributes.append(str(is_extern))
+
+        #set true/false if the mail location is in incriminating folder
+        with open("incriminating_folders.csv", "r", encoding="utf-8") as f:
+            incriminating_folders = f.readlines()
+        incriminating_folders = [x.strip() for x in incriminating_folders] 
+        self.headers.append('is_incriminating_folder')
+        self.attributes.append(str(self.mail_folder in incriminating_folders))
 
     def to_csv_line(self):
         return ';'.join(self.attributes)
