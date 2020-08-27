@@ -2,8 +2,6 @@ import os
 import prepare_sample
 from  mail_manager import mail
 
-#CLEANED_MAILS_FOLDER = os.path.join(os.getcwd() , "tmpcleanedup")
-
 if not os.path.isdir( prepare_sample.SAMPLE_DATA_PATH):
     prepare_sample.create_mails_sample_dataset(1)
 

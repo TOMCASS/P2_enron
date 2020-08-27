@@ -38,6 +38,5 @@ def create_mails_sample_dataset (sample_data_percent) :
     for mail in sample_dataset:
         print("(%s) %s" % (i, mail))
         shutil.copy(mail,  os.path.join(SAMPLE_DATA_PATH, str(uuid.uuid1())))
-        #os.rename( os.path.join(SAMPLE_DATA_PATH,mail), os.path.join(SAMPLE_DATA_PATH, str(uuid.uuid1())) )#rename
         i = i+1
 
