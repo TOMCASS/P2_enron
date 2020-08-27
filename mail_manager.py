@@ -35,7 +35,6 @@ class mail():
             return wn.NOUN
 
     def standardize_text(self, text):
-
         text = text.lower()
         #remove punctuation
         result = re.compile('[%s]' % re.escape(string.punctuation))
